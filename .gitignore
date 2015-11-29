@@ -1,0 +1,8 @@
+build/
+css/*.min.css
+dist/
+elm-stuff
+elm.js
+node_modules
+npm-debug.log
+deploy.sh

@@ -1,0 +1,29 @@
+{
+  "name": "yslt-elm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "elm.js",
+  "scripts": {
+    "minify": "uglifyjs --compress 'dead_code, warnings=false' --mangle -o build/elm.js -- build/elm.js",
+    "make": "mkdirp build && elm-make src/Main.elm --output build/elm.js && npm run minify",
+    "clean": "rimraf dist/ && mkdir dist/",
+    "css": "csso -i css/style.css -o css/style.min.css",
+    "build": "npm run make && npm run css",
+    "distCopy": "cp -r CNAME dist/ && cp -r build/ dist/",
+    "distCritical": "html-inline --ignore-images --ignore-scripts -i index.html -o dist/index.html",
+    "dist": "npm run clean && npm run build && npm run distCopy && npm run distCritical",
+    "start": "npm run build && ELM_HOME=node_modules/elm/share elm-reactor",
+    "deploy": "npm run dist && surge dist/",
+    "watch": "chokidar 'src/*.elm' -c 'npm run make'"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csso": "^1.4.2",
+    "elm": "^0.16.0",
+    "html-inline": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.4.4",
+    "uglify-js": "^2.6.1"
+  }
+}
