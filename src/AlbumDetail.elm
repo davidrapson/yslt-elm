@@ -44,8 +44,7 @@ getRandomAlbum =
 
 randomUrl : String
 randomUrl =
-  --Http.url "https://yslt-api.herokuapp.com/album.json" []
-  Http.url "http://localhost:9000/album.json" []
+  Http.url "https://yslt-api.herokuapp.com/album.json" []
 
 spotifyDecoder : Json.Decoder (Dict.Dict String String)
 spotifyDecoder = Json.dict Json.string
