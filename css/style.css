@@ -24,11 +24,6 @@ a {
 a:hover {
     border-bottom-style: solid;
 }
-a.is-disabled {
-    opacity: 0.3;
-    pointer-events: none;
-    border-bottom: none;
-}
 
 h1, h2, h3, h4, h5, h6 {
     line-height: 1.1;
@@ -153,6 +148,11 @@ h1, h2, h3, h4, h5, h6 {
 .album__links {
     font-family: sans-serif;
     font-size: 0.9rem;
+}
+.album__link.is-disabled {
+    opacity: 0.3;
+    pointer-events: none;
+    border-bottom: none;
 }
 .album__rating {
     color: #bbb;

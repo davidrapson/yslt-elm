@@ -1,13 +1,14 @@
 module AlbumDetail where
 
+import String
+import Dict
+import Task
+import Http
+import Json.Decode as Json exposing ((:=))
 import Effects exposing (Effects, Never)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Http
-import Json.Decode as Json exposing ((:=))
-import Task
-import Dict
 
 
 -- MODEL
@@ -17,9 +18,20 @@ type alias Album =
   , title: String
   , releaseDate: String
   , score: Int
-  , artwork : Maybe String
-  , itunesUrl: Maybe String
-  , spotify: Maybe (Dict.Dict String String)
+  , spotify: Maybe Spotify
+  }
+
+type alias Spotify =
+  { id: String
+  , uri: String
+  , player_url: String
+  , images: List Image
+  }
+
+type alias Image =
+  { url: String
+  , width: Int
+  , height: Int
   }
 
 type alias AlbumResult =
@@ -46,20 +58,31 @@ randomUrl : String
 randomUrl =
   Http.url "https://yslt-api.herokuapp.com/album.json" []
 
-spotifyDecoder : Json.Decoder (Dict.Dict String String)
-spotifyDecoder = Json.dict Json.string
---
+
+-- DECODERS
+
+decodeSpotify : Json.Decoder Spotify
+decodeSpotify =
+  Json.object4 Spotify
+    ("id" := Json.string)
+    ("uri" := Json.string)
+    (Json.at ["external_urls", "spotify"] Json.string)
+    ("images" := (
+      Json.list <|
+        Json.object3 Image
+          ("url" := Json.string)
+          ("width" := Json.int)
+          ("height" := Json.int)
+    ))
 
 decodeUrl : Json.Decoder Album
 decodeUrl =
-  Json.object7 Album
+  Json.object5 Album
     ("artist" := Json.string)
     ("title" := Json.string)
     ("releaseDate" := Json.string)
     ("score" := Json.int)
-    (Json.maybe ("artwork" := Json.string))
-    (Json.maybe ("itunesUrl" := Json.string))
-    (Json.maybe ("spotify" := spotifyDecoder))
+    (Json.maybe ("spotify" := decodeSpotify))
 
 
 -- UPDATE
@@ -79,7 +102,23 @@ update action model =
       ({ album = maybeAlbum, isLoading = False }, Effects.none)
 
 
+-- HELPERS
+
+srcset : (List Image) -> String
+srcset images =
+  List.map (\x -> x.url ++ " " ++ (toString x.width) ++ "w") images
+    |> String.join ", "
+
+
 -- VIEW
+
+{-
+  Would be nice if there was Html.nothing
+  Unless I'm missing something and this could
+  be more carefully handled with Maybe
+-}
+htmlNothing : Html
+htmlNothing = span [] []
 
 view : Signal.Address Action -> AlbumResult -> Html
 view address model =
@@ -116,7 +155,11 @@ albumDetailView album isLoading =
     ]
   ] [
     div [ class "album__media" ] [
-      artworkView album
+      (
+        case album.spotify of
+          Just spotify -> artworkView spotify.images album.title
+          _ -> htmlNothing
+      )
     ],
     div [ class "album__body" ] [
       div [ class "album__details" ] [
@@ -125,23 +168,30 @@ albumDetailView album isLoading =
       ],
       div [ class "album__meta" ] [
         span [ class "album__artist" ] [ text album.artist ]
-      ]
-      --ul [ class "album__links list-unstyled" ]
-      --  [ li [] [itunesLinkView album.itunesUrl] ]
+      ],
+      ul [ class "album__links list-unstyled" ]
+        [ li [] [spotifyLinkView album.spotify] ]
     ]
   ]
 
-artworkView : Album -> Html
-artworkView model =
-  case model.artwork of
-    Just url -> img [ src url, alt model.title  ] []
-    Nothing -> span [] []
+artworkView : (List Image) -> String -> Html
+artworkView images altText =
+  case (List.head images) of
+    Just mainImg -> (
+      img [
+        src mainImg.url,
+        attribute "srcset" (srcset images),
+        attribute "sizes" "100vw",
+        alt altText
+      ] []
+    )
+    _ -> htmlNothing
 
---itunesLinkView: Maybe String -> Html
---itunesLinkView maybeLink =
---  case maybeLink of
---    Just url -> a [ href url, class "album__link" ] [ text "iTunes" ]
---    Nothing -> span [ class "album__link is-disabled" ] [ text "iTunes" ]
+spotifyLinkView: Maybe Spotify -> Html
+spotifyLinkView maybeSpotify =
+  case maybeSpotify of
+    Just spotify -> a [ href spotify.player_url, class "album__link" ] [ text "Spotify" ]
+    _ -> htmlNothing
 
 headerView: Html
 headerView =

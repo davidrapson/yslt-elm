@@ -14,7 +14,7 @@
     "dist": "npm run clean && npm run build && npm run distCopy && npm run distCritical",
     "start": "npm run build && ELM_HOME=node_modules/elm/share elm-reactor",
     "deploy": "npm run dist && surge dist/",
-    "watch": "chokidar 'src/*.elm' -c 'npm run make'"
+    "watch": "chokidar 'src/*.elm' -c 'npm run build'"
   },
   "author": "",
   "license": "ISC",
