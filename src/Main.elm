@@ -1,4 +1,4 @@
-module Demo (main) where
+module YSLT (main) where
 
 import Effects exposing (Never)
 import AlbumDetail exposing (init, update, view)

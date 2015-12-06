@@ -7,6 +7,7 @@ import Html.Events exposing (onClick)
 import Http
 import Json.Decode as Json exposing ((:=))
 import Task
+import Dict
 
 
 -- MODEL
@@ -18,6 +19,7 @@ type alias Album =
   , score: Int
   , artwork : Maybe String
   , itunesUrl: Maybe String
+  , spotify: Maybe (Dict.Dict String String)
   }
 
 type alias AlbumResult =
@@ -42,17 +44,23 @@ getRandomAlbum =
 
 randomUrl : String
 randomUrl =
-  Http.url "https://yslt-api.herokuapp.com/album.json" []
+  --Http.url "https://yslt-api.herokuapp.com/album.json" []
+  Http.url "http://localhost:9000/album.json" []
+
+spotifyDecoder : Json.Decoder (Dict.Dict String String)
+spotifyDecoder = Json.dict Json.string
+--
 
 decodeUrl : Json.Decoder Album
 decodeUrl =
-  Json.object6 Album
+  Json.object7 Album
     ("artist" := Json.string)
     ("title" := Json.string)
     ("releaseDate" := Json.string)
     ("score" := Json.int)
     (Json.maybe ("artwork" := Json.string))
     (Json.maybe ("itunesUrl" := Json.string))
+    (Json.maybe ("spotify" := spotifyDecoder))
 
 
 -- UPDATE
@@ -118,9 +126,9 @@ albumDetailView album isLoading =
       ],
       div [ class "album__meta" ] [
         span [ class "album__artist" ] [ text album.artist ]
-      ],
-      ul [ class "album__links list-unstyled" ]
-        [ li [] [itunesLinkView album.itunesUrl] ]
+      ]
+      --ul [ class "album__links list-unstyled" ]
+      --  [ li [] [itunesLinkView album.itunesUrl] ]
     ]
   ]
 
@@ -130,11 +138,11 @@ artworkView model =
     Just url -> img [ src url, alt model.title  ] []
     Nothing -> span [] []
 
-itunesLinkView: Maybe String -> Html
-itunesLinkView maybeLink =
-  case maybeLink of
-    Just url -> a [ href url, class "album__link" ] [ text "iTunes" ]
-    Nothing -> span [ class "album__link is-disabled" ] [ text "iTunes" ]
+--itunesLinkView: Maybe String -> Html
+--itunesLinkView maybeLink =
+--  case maybeLink of
+--    Just url -> a [ href url, class "album__link" ] [ text "iTunes" ]
+--    Nothing -> span [ class "album__link is-disabled" ] [ text "iTunes" ]
 
 headerView: Html
 headerView =
