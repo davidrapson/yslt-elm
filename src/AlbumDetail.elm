@@ -211,7 +211,7 @@ footerView address =
         a [ href "https://twitter.com/davidrapson" ] [ text "David Rapson" ]
       ],
       p [] [
-        a [ href "https://github.com/davidrapson/yslt" ] [ text "Source" ]
+        a [ href "https://github.com/davidrapson/yslt-elm" ] [ text "Source" ]
       ]
     ]
   ]
