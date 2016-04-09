@@ -19,7 +19,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "csso": "^1.4.2",
+    "csso": "^2.0.0",
     "elm": "^0.16.0",
     "html-inline": "^1.2.0",
     "mkdirp": "^0.5.1",

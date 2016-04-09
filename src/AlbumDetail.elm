@@ -118,7 +118,7 @@ srcset images =
   be more carefully handled with Maybe
 -}
 htmlNothing : Html
-htmlNothing = span [] []
+htmlNothing = text ""
 
 view : Signal.Address Action -> AlbumResult -> Html
 view address model =
