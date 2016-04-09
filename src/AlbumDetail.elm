@@ -56,7 +56,7 @@ getRandomAlbum =
 
 randomUrl : String
 randomUrl =
-  Http.url "https://yslt-api.herokuapp.com/album.json" []
+  Http.url "https://yslt-api-wkfnhwzkah.now.sh/album.json" []
 
 
 -- DECODERS
